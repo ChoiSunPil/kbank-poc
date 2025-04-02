@@ -16,6 +16,7 @@ sqlmodel = "^0.0.24"
 pydantic = "^2.11.1"
 dotenv = "^0.9.9"
 uvicorn = "^0.34.0"
+langsmith = "^0.3.22"
 
 
 [build-system]
