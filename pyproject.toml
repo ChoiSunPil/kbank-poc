@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "kbank-poc"
+version = "0.1.0"
+description = "decisionmaking platporm"
+authors = ["choisunpil <roung4119@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.115.12"
+langchain = "^0.3.22"
+langgraph = "^0.3.23"
+pytest = "^8.3.5"
+sqlmodel = "^0.0.24"
+pydantic = "^2.11.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
