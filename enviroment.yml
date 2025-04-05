@@ -20,7 +20,13 @@ dependencies:
   - torchvision
   - langchain-huggingface
   - langchain-community
+  - langchain-chroma
   - idna
+  - selenium
+  - pypdf
+  - pandas
+  - pypdf
+  - python-pptx
   # ✅ pip로만 설치 가능한 것들
   - pip
   - pip:

@@ -1,0 +1,10 @@
+prompt_template:
+  input_variables: ["documents", "query"]
+  template: |
+    현재 나는 RAG로 내부 문서를 검색해서 전달해줄테니까
+    해당 정보를 참고해서 사용자 질문에 친절하게 대답해줘
+    관련 내부 정보:
+    {documents}
+
+    질문:
+    {query}
