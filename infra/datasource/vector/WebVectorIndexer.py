@@ -3,7 +3,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 from dotenv import load_dotenv
@@ -11,10 +11,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class WebVectorIndexer:
-    def __init__(self, url: str, persist_dir: str = "chroma_faiss"):
+    def __init__(self, url: str, persist_dir: str = "chroma"):
         self.url = url
         self.persist_dir = persist_dir
-        self.embeddings = OpenAIEmbeddings()
+        self.embeddings = HuggingFaceEmbeddings(
+            model_name="jhgan/ko-sbert-sts",            # KoSBERT 기반 STS 특화
+            model_kwargs={"device": "cpu"}              # MPS, cuda 로 바꿔도 OK
+        )
+
         self.vector_db = None
         self.raw_text = ""
         self.documents: list[Document] = []

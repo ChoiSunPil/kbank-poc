@@ -1,116 +1,21 @@
-# 📘 Kbank-ai-poc
+# 🧠 kbank-poc: VectorDB 기반 AI 검색 시스템
+
+> FastAPI, LangChain, HuggingFace, ChromaDB 등을 활용한 임베딩 기반 검색 API 프로젝트
 
 ---
 
-## 📦 사전 준비 사항
+## 🔧 프로젝트 환경 구성
 
-- Python 3.10.x 버전 설치  
-- Poetry 설치 (아래 참고)
+### Conda + Poetry에서 Conda + pip 전환 이유
+#### apple slicon local pc에서 conda + poetry 사용 시 <br> library import 이슈 발생(ex arm64로 설치해도 x86으로 읽으려고함) <br> 따라서 conda에 있는 라이브러리는 conda-forge 통해서 설치 <br>아닌 경우만 pip 로 설치
 
----
 
-## 💡 Poetry 설치
+### ✅ Conda 환경 설정
 
-### 방법 1. pipx 사용 (권장)
+이 프로젝트는 [conda-forge](https://conda-forge.org/)를 활용하여 reproducible한 개발 환경을 구성합니다.
 
-```bash
-pip install --user pipx
-pipx ensurepath
-pipx install poetry
-```
-
-설치 확인:
+#### 1. Conda 환경 생성
 
 ```bash
-poetry --version
-```
-
-### 방법 2. 공식 설치 스크립트
-
-```bash
-curl -sSL https://install.python-poetry.org | python3 -
-```
-
----
-
-## 📁 프로젝트 설치
-
-1. 이 레포를 클론합니다:
-
-```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
-```
-
-2. Poetry가 요구하는 Python 버전 설정 (예: 3.10.4)
-
-```bash
-poetry env use /usr/local/bin/python3.10
-```
-
-3. 의존성 설치 (가상환경 자동 생성됨)
-
-```bash
-poetry install
-```
-
----
-
-## 💻 가상환경 실행
-
-```bash
-poetry shell
-```
-
-또는 한 번만 실행하고 나올 거면:
-
-```bash
-poetry run python main.py
-```
-
----
-
-## ▶️ main.py 실행
-
-```bash
-poetry run python main.py
-```
-
-가상환경 안이라면 그냥:
-
-```bash
-python main.py
-```
-
----
-
-## ✅ 추가 명령어
-
-| 작업 | 명령어 |
-|--------|--------|
-| 가상환경 위치 확인 | `poetry env info --path` |
-| 가상환경 나가기 | `exit` 또는 `Ctrl + D` |
-| 특정 명령 실행 | `poetry run <command>` |
-| 의존성 업데이트 | `poetry update` |
-
----
-
-## 🧪 테스트 실행
-
-```bash
-poetry run pytest -v
-```
-
----
-
-## 📄 참고 파일
-
-- `pyproject.toml`: 프로젝트 메타 및 의존성 정의
-- `poetry.lock`: 설치된 정확한 패키지 버전 잠금 파일
-
----
-
-## ☕ License
-
-MIT © 2025 Your Name
-
+conda env create -f environment.yml
+conda activate kbank-poc

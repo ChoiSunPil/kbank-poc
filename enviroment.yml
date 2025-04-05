@@ -1,0 +1,33 @@
+name: kbank-poc
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # ✅ conda-forge에서 설치할 패키지들
+  - python=3.10.13
+  - fastapi
+  - uvicorn
+  - pydantic
+  - pydantic-settings
+  - requests
+  - beautifulsoup4
+  - pytest
+  - sqlmodel
+  - transformers
+  - sentence-transformers
+  - numpy
+  - pytorch=2.6.0
+  - torchvision
+  - langchain-huggingface
+  - langchain-community
+  - idna
+  # ✅ pip로만 설치 가능한 것들
+  - pip
+  - pip:
+      - chromadb>=0.4.0
+      - langchain
+      - langgraph
+      - langsmith
+      - gradio
+
+
