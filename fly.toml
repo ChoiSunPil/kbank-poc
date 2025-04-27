@@ -1,0 +1,21 @@
+app = "kbank-poc-app"  # Fly.io 앱 이름 (원하면 바꿔도 돼)
+
+primary_region = "nrt"  # Tokyo 리전 (한국과 가장 가까움, 빠름)
+
+[build]
+
+[env]
+  SERVER_PORT = "8000"  # (서버 내부 포트, Gradio, FastAPI용)
+  PERSIST_DIR = "/app/datasource/vector/data"  # (Vector DB 저장 위치)
+
+[[services]]
+  internal_port = 8000
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
