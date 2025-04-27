@@ -1,4 +1,4 @@
-app = "kbank-poc-app"  # Fly.io 앱 이름 (원하면 바꿔도 돼)
+app = "kbank-poc"  # Fly.io 앱 이름 (원하면 바꿔도 돼)
 
 primary_region = "nrt"  # Tokyo 리전 (한국과 가장 가까움, 빠름)
 

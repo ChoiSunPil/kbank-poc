@@ -26,6 +26,8 @@ ENV PERSIST_DIR=${PERSIST_DIR}
 
 WORKDIR /app
 
+RUN mkdir -p /tmp/gradio && chmod 777 /tmp/gradio
+
 COPY --from=builder /opt/conda/envs/kbank-poc /opt/conda/envs/kbank-poc
 COPY . .
 
