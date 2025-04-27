@@ -1,11 +1,9 @@
 # main.py
-from fastapi import FastAPI
 from dotenv import load_dotenv
 import gradio as gr
 from service.langraph_service import run_langraph_pipeline
 from service.vectordb_upload_service import update_vectordb
-def greet(name, intensity):
-    return "Hello, " + name + "!" * int(intensity)
+import os
 
 if __name__ == '__main__':
 
@@ -16,9 +14,7 @@ if __name__ == '__main__':
     #     description="Kbank Proof-of-Concept API"
     # )
 
-    def sample1(input):
-        return 123
-
+    server_port = int(os.getenv("SERVER_PORT", 8000))
 
     with gr.Blocks() as demo:
         gr.Markdown("### LangGraph 기반 질의응답 & vectorDB 파일 업로드")
@@ -35,4 +31,4 @@ if __name__ == '__main__':
             upload_button = gr.Button("📌 VectorDB에 저장")
             upload_button.click(fn=update_vectordb, inputs=[file_input], outputs=[output])
 
-    demo.launch()
+    demo.launch(server_name="0.0.0.0", server_port=server_port)

@@ -21,12 +21,14 @@ dependencies:
   - langchain-huggingface
   - langchain-community
   - langchain-chroma
+  - langchain-openai
   - idna
   - selenium
   - pypdf
   - pandas
   - pypdf
   - python-pptx
+  - python-dotenv
   # ✅ pip로만 설치 가능한 것들
   - pip
   - pip:

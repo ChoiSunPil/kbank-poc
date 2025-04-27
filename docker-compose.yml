@@ -1,0 +1,15 @@
+services:
+  kbank-poc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kbank-poc-container
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - PERSIST_DIR=/app/datasource/vector/data  # 컨테이너 안 기준
+    volumes:
+      - ${PERSIST_DIR}:/app/datasource/vector/data
+    restart: always
