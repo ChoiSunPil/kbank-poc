@@ -5,8 +5,8 @@ import yaml
 from pathlib import Path
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from langchain_core.documents import Document
-
+from langchain_core.tools import tool
+from langchain_core.output_parsers import JsonOutputKeyToolsParser
 def run_langraph_pipeline(query: str):
     workflow = StateGraph(KbankQueryState)
 
@@ -36,33 +36,68 @@ def run_langraph_pipeline(query: str):
     app = workflow.compile()
     result = app.invoke({"query": query})
 
+    print(result)
+
     return result['answer']
 
 
+@tool
+def route_decision(decision: str):
+    """질문을 분석하여 'vectordb', 'ml', 'llm' 중 하나를 결정합니다."""
+    if decision not in {"vectordb", "ml", "llm"}:
+        return "default"
+
+    return decision
+
+
 def make_decision(state: KbankQueryState) -> str:
-    return "vectordb"
+    llm = ChatOpenAI(model="gpt-4-turbo", temperature=0)
+
+    # 사용할 함수 목록 등록
+    tools = [route_decision]
+
+    prompt = load_make_decision_prompt()
+    prompt.format_messages(query=state['query'])
+    chain = (prompt
+             | llm.bind_tools(tools)
+             | JsonOutputKeyToolsParser(key_name="route_decision"))
+
+    response = chain.invoke({"query": state['query']})
+
+    decision = response[0].get("decision", "default")
+
+    return decision
 
 
 def query_by_vectordb(state: KbankQueryState):
     indexer = KbankWebVectorIndexer()
     documents = indexer.search(state.get("query"), 3)
-    return {"query": state['query'], "documents": documents}
+
+    return {"decision": "vectordb", "documents": documents}
 
 
 def query_by_llm(state: KbankQueryState):
-    return None
+    return {"decision": "llm"}
 
 
 def query_by_ml(state: KbankQueryState):
-    return None
+
+    bank_name = "케이뱅크"
+
+    return {"decision": "ml", "bank_name": bank_name}
 
 
 def make_answer(state: KbankQueryState):
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
     answer_prompt = load_answer_prompt()
-    context = "\n\n".join([doc.page_content for doc in state['documents']])
-    messages = answer_prompt.format_messages(documents=context, query=state['query'])
-    return {"query": state['query'], "documents": state['documents'], "answer": llm.invoke(messages).content}
+    if state['decision'] == 'vectordb':
+        context = "\n\n".join([doc.page_content for doc in state['documents']])
+    else:
+        context = None
+
+    messages = answer_prompt.format_messages(documents=context, query=state.get('query', ''), bank_name=state.get('bank_name', ''))
+
+    return {"answer": llm.invoke(messages).content}
 
 
 def load_answer_prompt() -> ChatPromptTemplate:
@@ -73,3 +108,10 @@ def load_answer_prompt() -> ChatPromptTemplate:
         prompt_dict = yaml.safe_load(f)
     return ChatPromptTemplate.from_template(prompt_dict["prompt_template"]["template"])
 
+
+def load_make_decision_prompt() -> ChatPromptTemplate:
+    base_dir = Path(__file__).resolve().parent.parent
+    prompt_path = base_dir / "infra" / "datasource" / "llm" / "prompt" / "make_decision_prompt.yaml"
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        prompt_dict = yaml.safe_load(f)
+    return ChatPromptTemplate.from_template(prompt_dict["prompt_template"]["template"])
