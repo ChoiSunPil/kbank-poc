@@ -19,3 +19,7 @@ primary_region = "nrt"  # Tokyo 리전 (한국과 가장 가까움, 빠름)
   [[services.ports]]
     handlers = ["tls", "http"]
     port = 443
+
+[mounts]
+  source = "chromadb_data"
+  destination = "/app/datasource/vector/data"
