@@ -6,7 +6,9 @@ from pathlib import Path
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
-from langchain_core.output_parsers import JsonOutputKeyToolsParser
+from langchain import hub as prompts
+
+
 def run_langraph_pipeline(query: str):
     workflow = StateGraph(KbankQueryState)
 
@@ -37,12 +39,11 @@ def run_langraph_pipeline(query: str):
     result = app.invoke({"query": query})
 
     print(result)
-
     return result['answer']
 
 
 @tool
-def route_decision(decision: str):
+def route_decision(decision: str) -> str:
     """질문을 분석하여 'vectordb', 'ml', 'llm' 중 하나를 결정합니다."""
     if decision not in {"vectordb", "ml", "llm"}:
         return "default"
@@ -51,20 +52,14 @@ def route_decision(decision: str):
 
 
 def make_decision(state: KbankQueryState) -> str:
-    llm = ChatOpenAI(model="gpt-4-turbo", temperature=0)
-
-    # 사용할 함수 목록 등록
-    tools = [route_decision]
-
-    prompt = load_make_decision_prompt()
-    prompt.format_messages(query=state['query'])
-    chain = (prompt
-             | llm.bind_tools(tools)
-             | JsonOutputKeyToolsParser(key_name="route_decision"))
+    
+    chain = prompts.pull("make_decision_prompt", include_model=True)
 
     response = chain.invoke({"query": state['query']})
 
-    decision = response[0].get("decision", "default")
+
+    print(response.tool_calls)
+    decision = response.tool_calls[0]['args']['decision']
 
     return decision
 
@@ -88,18 +83,20 @@ def query_by_ml(state: KbankQueryState):
 
 
 def make_answer(state: KbankQueryState):
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
-    answer_prompt = load_answer_prompt()
+    
+    chain = prompts.pull("answer_prompt", include_model=True)
+    
     if state['decision'] == 'vectordb':
         context = "\n\n".join([doc.page_content for doc in state['documents']])
     else:
         context = None
-
-    messages = answer_prompt.format_messages(documents=context, query=state.get('query', ''), bank_name=state.get('bank_name', ''))
-
-    return {"answer": llm.invoke(messages).content}
-
-
+        
+    return {"answer": chain.invoke({"documents":context
+                                    ,"query":state.get('query', '')
+                                    ,"bank_name" : state.get('bank_name', '')
+                                    }).content}
+    
+    
 def load_answer_prompt() -> ChatPromptTemplate:
     base_dir = Path(__file__).resolve().parent.parent
     # yaml 경로 설정 (상대 경로로 접근)

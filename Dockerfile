@@ -1,16 +1,3 @@
-# 1. 빌드용 스테이지
-FROM continuumio/miniconda3 AS builder
-
-WORKDIR /app
-
-# environment.yml 복사 후 환경 생성
-COPY environment.yml .
-COPY . .
-
-RUN conda env create -f environment.yml
-RUN conda clean -afy
-
-# 2. 실제 실행용 스테이지
 FROM continuumio/miniconda3
 
 ARG OPENAI_API_KEY
@@ -23,14 +10,14 @@ ENV LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
 ENV SERVER_PORT=${SERVER_PORT}
 ENV PERSIST_DIR=${PERSIST_DIR}
 
-
 WORKDIR /app
 
 RUN mkdir -p /tmp/gradio && chmod 777 /tmp/gradio
 
-COPY --from=builder /opt/conda/envs/kbank-poc /opt/conda/envs/kbank-poc
+COPY environment.yml .
 COPY . .
 
+RUN conda env create -f environment.yml && conda clean -afy
 
 ENV PATH /opt/conda/envs/kbank-poc/bin:$PATH
 ENV CONDA_DEFAULT_ENV=kbank-poc
